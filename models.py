@@ -44,7 +44,7 @@ class Brands:
         self.company = company
         if self.company == 'tegral':
             #tegral MYOB details
-            company_id = "1c79926b-3034-409d-af3f-1f6719ab711d"
+            company_id = "xx"
             company_url = "https://arl2.api.myob.com/accountright"
             self.url_invoice = "%s/%s/Sale/Invoice/Item?$filter=Date ge datetime'%s' and Date le datetime'%s'"%(company_url, company_id, start_date, last_date)
             self.url_invoice_product = "%s/%s/Sale/Invoice/Item?$top=1000&$skip=1000&$filter=Date ge datetime'%s' and Date le datetime'%s'"%(company_url, company_id, start_year_date, last_date)
@@ -52,9 +52,9 @@ class Brands:
             self.url_orders = "%s/%s/Sale/Order/Item?$filter=Date ge datetime'%s' and Date le datetime'%s' and Status eq 'Open'"%(company_url, company_id, start_date, orders_enddate.date())
 
             #token and secret keys
-            self.api_key = "b8cc48f8-1e5d-44c6-9a57-aa0815aaed23"
-            self.client_secret = "07W7kC6s9HDCUmHOgQ0GwyRw"
-            self.site_token = 'poU7!IAAAANNbTR9SoyqcYi0sT7xghbwRJaw14myiHr4EKcISp41wwQAAAAEJxh8eHy402-BakGA54SPuqPXImv0cRkjRqgqtrmWPw-WaXIfTaQHSSDE2BH_x4F12T-TIf2y6zqP8M8seNc3XG3DCTX8DTrZfPnd7MryEhG41HNHnzKP_VdlN9YWsR2PhoGhMGZRrCzIDRD_kEeQmNe79JSaSAiZ7tNTaEa7g-X1Cy1BU9-pNmwXWUrGRzkXMmPxV-NINFRgtY3BgJdKzXh9yAhUN6h11sWJSJgnNHnoKlV3oT8iTCYoSeAAgPaw'
+            self.api_key = "xx"
+            self.client_secret = "xx"
+            self.site_token = 'xx'
             
         else:
             #purific MYOB details
@@ -64,9 +64,9 @@ class Brands:
             self.url_orders = "%s/%s/Sale/Order/Item?$filter=Date ge datetime'%s' and Date le datetime'%s' and Status eq 'Open'"%(company_url, company_id, start_date, orders_enddate.date())
 
             #token and secret keys
-            self.api_key = "72f41902-284d-403c-8cdc-654d5fda216d"
-            self.client_secret = "ugSr6rek1akLoqbI8Q22F6jF"
-            self.site_token = 'lvnc!IAAAAArQBLEMnNsuvqUvNLojZMW59hjy2TE-9g3GtysaUzc7wQAAAAGqxUo9Drb0FS5xZ6hsL5LAac3bi6E8uXLWzFE2RTnzjsmfIVb_IjOvtwgSklNvOoWa4U2_tU62GHaJLwAqgFZmemxVf2GzOmWZSY9I9h39zSlZrCzkF-S2R3d8rHdydaugR6aTmDbaj6JKMok92lnUFWXqYiaYERkWAsH2I7cj8iT-GLInQpOKKrOULr4dKM_QH9c012O5WX5T5U6IO5xJK_XQDYwjZG8gZ941BmtU8Jonph-w86nlpsJAP4s9u8s'
+            self.api_key = "xx"
+            self.client_secret = "xx"
+            self.site_token = 'xx'
 
     #Create database and table
     def create_myob_db(self):
@@ -2324,7 +2324,7 @@ class Forms:
 
 class Pipedrive:
     #Pipedrive Token
-    pipedrive_token = "5dd8a978276443f93d971f5bf17436190a16f484"
+    pipedrive_token = "xx"
 
     #get monday for this week
     pipe_today = pendulum.now()
