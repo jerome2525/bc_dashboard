@@ -1,0 +1,220 @@
+{% extends "layout.html" %}
+{% block content %}
+<section class="section">
+    <div class="row">
+        <div class="col-lg-6">
+
+            <div class="card">
+                <div class="card-body">
+                    
+                <h5 class="card-title">{{title}}</h5>
+
+                <!-- General Form Elements -->
+                <form method="POST" action="" id="add-product-cat-form">
+                    {{ form.hidden_tag() }}
+                    <div class="row mb-3">
+                        {{ form.category_name.label(class="col-sm-3 col-form-label") }}
+                        <div class="col-sm-9">
+                            {{ form.category_name(class="form-control") }}
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        {{ form.product_ids.label(class="col-sm-3 col-form-label") }}
+                        <div class="col-sm-9">
+                            {{ form.product_ids(class="form-control field-uppercase") }}
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        {{ form.fy_actual.label(class="col-sm-3 col-form-label") }}
+                        <div class="col-sm-9">
+                            {{ form.fy_actual(class="form-control") }}
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        {{ form.new_growth.label(class="col-sm-3 col-form-label") }}
+                        <div class="col-sm-9">
+                            {{ form.new_growth(class="form-control") }}
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        {{ form.growth_portions.label(class="col-sm-3 col-form-label") }}
+                        <div class="col-sm-9">
+                            {{ form.growth_portions(class="form-control") }}
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                    <label class="col-sm-3 col-form-label"></label>
+                    <div class="col-sm-9">
+                        <button class="btn btn-primary"><span class="spinner-border spinner-border-sm generate-spinner" role="status" aria-hidden="true" style="display: none;"></span> Add Product Category</button>
+                    </div>
+                    </div>
+
+                    <div id="result"></div>
+
+                </form><!-- End General Form Elements -->
+                <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+                <script>
+                    (function($) {
+                        $('#add-product-cat-form').submit(function (e) {
+                            var url = "{{ url_for('add_product_category_process') }}"; // send the form data here.
+                            $.ajax({
+                                type: "POST",
+                                url: url,
+                                data: $(this).serialize(), // serializes the form's elements.
+                                cache: false,
+                                beforeSend: function(){
+                                    $('.generate-spinner').show();
+                                },
+                                complete: function(){
+                                    $('.generate-spinner').hide();
+                                },
+                                success: function (data) {
+                                    $('.alert-danger').remove();
+                                    $('#add-product-cat-form input').removeClass('invalid-field');
+                                    if( data.result == 'SUCCESS') {
+                                        $('#result').prepend('<div class="alert alert-success bg-success text-light border-0 alert-dismissible fade show" role="alert">Successfully Added! Reloading after 2 seconds<button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button></div>');
+                                        setTimeout(function () {
+                                            location.reload();
+                                        }, 1000);
+                                    }
+                                    else if ( data.result == 'DUPLICATE') {
+                                        $('#category_name').addClass('invalid-field');
+                                        $('#result').prepend('<div class="alert alert-danger bg-danger text-light border-0 alert-dismissible fade show" role="alert">Error Category Already Exists!<button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button></div>');
+                                    }
+                                    else if ( data.result == 'FY_ACTUAL_INVALID') {
+                                        $('#fy_actual').addClass('invalid-field');
+                                        $('#result').prepend('<div class="alert alert-danger bg-danger text-light border-0 alert-dismissible fade show" role="alert">FY ACTUAL is not numbers please fixed! <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button></div>');
+                                    }
+                                    else if ( data.result == 'NEW_GROWTH_INVALID') {
+                                        $('#new_growth').addClass('invalid-field');
+                                        $('#result').prepend('<div class="alert alert-danger bg-danger text-light border-0 alert-dismissible fade show" role="alert">NEW GROWTH is not numbers please fixed! <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button></div>');
+                                    }
+                                    else if ( data.result == 'GROWTH_PORTIONS_INVALID') {
+                                        $('#growth_portions').addClass('invalid-field');
+                                        $('#result').prepend('<div class="alert alert-danger bg-danger text-light border-0 alert-dismissible fade show" role="alert">GROWTH PORTIONS is not numbers please fixed! <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button></div>');
+                                    }
+                                    else {
+                                        $('#result').prepend('<div class="alert alert-danger bg-danger text-light border-0 alert-dismissible fade show" role="alert">Field Errors!<button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button></div>');
+                                    }
+                                }
+                            });
+                            e.preventDefault(); // block the traditional submission of the form.
+                        });
+                
+                        // Inject our CSRF token into our AJAX request.
+                        $.ajaxSetup({
+                            beforeSend: function(xhr, settings) {
+                                if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
+                                    xhr.setRequestHeader("X-CSRFToken", "{{ form.csrf_token._value() }}")
+                                }
+                            }
+                        })
+                    })(jQuery);
+                </script>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Categories</h5>
+
+                    <!-- Table with stripped rows -->
+                    <table class="table table-striped">
+                    <thead>
+                        <tr>
+                        <th scope="col">ID</th>
+                        <th scope="col">Name</th>
+                        <th scope="col">Product ID's</th>
+                        <th scope="col">Edit</th>
+                        <th scope="col">Delete</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in cat_list %}
+                            <tr>
+                            <th scope="row">{{ row[0] }}</th>
+                            <td>{{ row[1] }}</td>
+                            <td>{{ row[2]|truncate(25) }}</td>
+                            <td style="text-align: center;"><a href="{{ url_for('edit_category',category_id=row[0]) }}" class=""><i class="bi bi-pencil-square"></i></a></td>
+                            <td style="text-align: center;"><a href="{{ row[0] }}" class="delete-cat-pass-form" data-bs-toggle="modal" data-bs-target="#deleteCatModal"><i class="bi bi-trash"></i></a></td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                    </table>
+                    <!-- End Table with stripped rows -->
+
+                </div>
+            </div> 
+
+            <div class="modal fade" id="deleteCatModal" tabindex="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Are you sure you wanted to delete this entry?</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-footer">
+                        <form method="POST" action="" id="delete-product-cat-form">
+                            {{ del_form.hidden_tag() }}
+                            <button class="btn btn-primary"><span class="spinner-border spinner-border-sm generate-spinner" role="status" aria-hidden="true" style="display: none;"></span><i class="bi arrow-clockwise"></i> Yes</button>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+                        </form>
+                    </div>
+                    </div>
+                </div>
+            </div><!-- End Basic Modal-->  
+            <script>
+                (function($) {
+                    //pass the data delete id to form when click
+                    $('.delete-cat-pass-form').click(function(e) {
+                        e.preventDefault();
+                        $('#cat_id').val($(this).attr('href'));
+                    });
+
+                    $('#delete-product-cat-form').submit(function (e) {
+                        var url = "{{ url_for('delete_product_category') }}"; // send the form data here.
+                        $.ajax({
+                            type: "POST",
+                            url: url,
+                            data: $(this).serialize(), // serializes the form's elements.
+                            cache: false,
+                            beforeSend: function(){
+                                $('.generate-spinner').show();
+                            },
+                            complete: function(){
+                                $('.generate-spinner').hide();
+                            },
+                            success: function (data) {
+                                console.log(data.result)
+                                if( data.result == 'SUCCESS') {
+                                    setTimeout(function () {
+                                        location.reload();
+                                    }, 1000);
+                                }
+                            }
+                        });
+                        e.preventDefault(); // block the traditional submission of the form.
+                    });
+            
+                    // Inject our CSRF token into our AJAX request.
+                    $.ajaxSetup({
+                        beforeSend: function(xhr, settings) {
+                            if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
+                                xhr.setRequestHeader("X-CSRFToken", "{{ form.csrf_token._value() }}")
+                            }
+                        }
+                    })
+                })(jQuery);
+            </script>
+
+        </div>
+    </div>
+</section>
+{% endblock content %}
+

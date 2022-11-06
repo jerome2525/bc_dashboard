@@ -1,0 +1,95 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="pagetitle">
+    <div id="result"></div>
+        <div class="row">
+        <div class="col-md-10">
+        <h1>{{title}}</h1>
+        </div>
+    </div>
+</div><!-- End Page Title -->
+<section class="section dashboard">
+  <div class="row">
+
+    <!-- Left side columns -->
+    <div class="col-lg-12">
+      <div class="row">
+        {% if callers_axis %}
+        <!-- Reports -->
+        <div class="col-12">
+            <div class="card">
+              <div class="card-body">
+                <h5 class="card-title">Reports <span>/This Week</span></h5>
+  
+                <!-- Column Chart -->
+                <div id="columnChart"></div>
+                <script>
+                  document.addEventListener("DOMContentLoaded", () => {
+                    new ApexCharts(document.querySelector("#columnChart"), {
+                      series: [{
+                        name: 'Success Calls',
+                        data: {{ success_call_axis | safe}}
+                      },
+                      {
+                        name: 'Attempted Calls',
+                        data: {{ attempted_call_axis | safe}}
+                      },
+                      {
+                        name: 'Voice Mail Calls',
+                        data: {{ voicemail_call_axis | safe}}
+                      }],
+                      chart: {
+                        type: 'bar',
+                        height: 350
+                      },
+                      plotOptions: {
+                        bar: {
+                          horizontal: false,
+                          columnWidth: '55%',
+                          endingShape: 'rounded'
+                        },
+                      },
+                      dataLabels: {
+                        enabled: false
+                      },
+                      stroke: {
+                        show: true,
+                        width: 2,
+                        colors: ['transparent']
+                      },
+                      xaxis: {
+                        categories: {{ callers_axis | safe }},
+                        title: {
+                          text: 'Salesperson'
+                        }
+                      },
+                      yaxis: {
+                        title: {
+                          text: 'Calls'
+                        }
+                      },
+                      colors: ['#00FF00', '#808080', '#0000FF'],
+                      fill: {
+                        opacity: 1
+                      }
+                    }).render();
+                  });
+                </script>
+                <!-- End Column Chart -->
+  
+              </div>
+            </div>
+
+          </div>
+        </div><!-- End Reports -->
+        {% else %}
+        <div class="alert alert-danger bg-danger text-light border-0 alert-dismissible fade show" role="alert">No Data Found!! Check the database</div>
+        {% endif %}
+
+      </div>
+    </div><!-- End Left side columns -->
+
+  </div>
+</section>
+{% endblock content %}
+

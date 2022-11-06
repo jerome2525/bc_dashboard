@@ -1,0 +1,309 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="pagetitle">
+  <div class="row">
+    <div id="result"></div>
+    <div class="col-md-10">
+      <h1>{{title}}</h1>
+    </div>
+    <div class="col-md-2" style="text-align:right;">
+      <a href="#" class="btn btn-primary" id="GeneratePurific"><span class="spinner-border spinner-border-sm generate-spinner" role="status" aria-hidden="true" style="display: none;"></span><i class="bi arrow-clockwise"></i> Generate</a>
+    </div>
+  </div>
+</div><!-- End Page Title -->
+<section class="section dashboard">
+  <div class="row">
+
+    <!-- Left side columns -->
+    <div class="col-lg-12">
+      <div class="row">
+        {% if date_axis %}
+        <!-- Reports -->
+        <div class="col-12">
+          <div class="card">
+
+            <div class="card-body">
+              <h5 class="card-title">Reports <span>/This Month</span></h5>
+
+              <!-- Line Chart -->
+              <div id="reportsChart"></div>
+              <script>
+                document.addEventListener("DOMContentLoaded", () => {
+                  new ApexCharts(document.querySelector("#reportsChart"), {
+                    series: [{
+                      name: 'Sales',
+                      data: {{sales_axis | safe}},
+                    },{
+                        name: 'Pipeline',
+                        data: {{pipe_axis | safe}}
+                    },{
+                        name: 'Year Target',
+                        data: {{year_axis | safe}}
+                    }],
+                    chart: {
+                      height: 350,
+                      type: 'area',
+                      toolbar: {
+                        show: false
+                      },
+                    },
+                    markers: {
+                      size: 4
+                    },
+                    colors: ['#00FF00', '#0000FF', '#808080'],
+                    fill: {
+                      type: "gradient",
+                      gradient: {
+                        shadeIntensity: 1,
+                        opacityFrom: 0.3,
+                        opacityTo: 0.4,
+                        stops: [0, 90, 100]
+                      }
+                    },
+                    dataLabels: {
+                      enabled: false
+                    },
+                    stroke: {
+                      curve: 'smooth',
+                      width: 2
+                    },
+                    xaxis: {
+                      type: 'date',
+                      categories: {{ date_axis | safe }},
+                      title: {
+                        text: 'Date'
+                      }
+                    },
+                    yaxis: {
+                      title: {
+                        text: '$ SALES'
+                      }
+                    },
+                    tooltip: {
+                      x: {
+                        format: 'dd/MM/yy'
+                      },
+                    }
+                  }).render();
+                });
+              </script>
+              <!-- End Line Chart -->
+
+            </div>
+
+          </div>
+        </div><!-- End Reports -->
+        {% else %}
+        <div class="alert alert-danger bg-danger text-light border-0 alert-dismissible fade show" role="alert">No Data Found!! Check the database</div>
+        {% endif %}
+
+        <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+        <script>
+          (function($) {
+            //Ajax for tegral purific
+            $('#GeneratePurific').bind('click', function() {
+              jQuery.ajax({
+                url: "{{ url_for('pr_add_invoice') }}",
+                dataType: 'json',
+                cache: false,
+                beforeSend: function(){
+                  $('.generate-spinner').show();
+                },
+                complete: function(){
+                  $('.generate-spinner').hide();
+                },
+                success:function(data){
+                  if( data.result == 'SUCCESS') {
+                    $('#result').prepend('<div class="alert alert-success bg-success text-light border-0 alert-dismissible fade show" role="alert">Successfully migrated! Reloading page after 3 seconds...<button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button></div>');
+                    setTimeout(function () {
+                      location.reload();
+                    }, 3000);
+                  }
+                  else {
+                    $('.alert-danger').hide();
+                    $('#result').prepend('<div class="alert alert-danger bg-danger text-light border-0 alert-dismissible fade show" role="alert">Error Connecting to API!<button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button></div>');
+                  }
+                },
+                async: "false",
+              });
+              return false;
+            });
+          })(jQuery);
+        </script>
+
+        <!-- Invoice Yesterday Card -->
+        <div class="col-xxl-2 col-md-6">
+          <div class="card info-card revenue-card">
+
+            <div class="card-body">
+              <h5 class="card-title">Invoice <span>| Yesterday</span></h5>
+
+              <div class="d-flex align-items-center">
+                <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                  <i class="bi bi-currency-dollar"></i>
+                </div>
+                <div class="ps-3">
+                  <h6>{{invoice_yesterday}}</h6>
+
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div><!-- End Revenue Card -->
+
+        <!-- Sales Invoice -->
+        <div class="col-xxl-2 col-md-6">
+          <div class="card info-card sales-card">
+            <div class="card-body">
+              <h5 class="card-title">Sales <span>| Today</span></h5>
+
+              <div class="d-flex align-items-center">
+                <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                  <i class="bi bi-cart"></i>
+                </div>
+                <div class="ps-3">
+                  <h6>{{sales_invoice}}</h6>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div><!-- End Sales Invoice -->
+
+        <!-- Month Potential Card -->
+        <div class="col-xxl-2 col-md-6">
+          <div class="card info-card revenue-card">
+
+            <div class="card-body">
+              <h5 class="card-title">Potential <span>| This Month</span></h5>
+
+              <div class="d-flex align-items-center">
+                <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                  <i class="bi bi-currency-dollar"></i>
+                </div>
+                <div class="ps-3">
+                  <h6>{{month_potential}}</h6>
+
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div><!-- Month Potential Card -->
+
+        <!-- Pipeline Card -->
+        <div class="col-xxl-2 col-md-6">
+          <div class="card info-card revenue-card">
+
+            <div class="card-body">
+              <h5 class="card-title">Pipeline <span>| This Month</span></h5>
+
+              <div class="d-flex align-items-center">
+                <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                  <i class="bi bi-currency-dollar"></i>
+                </div>
+                <div class="ps-3">
+                  <h6>{{pipeline}}</h6>
+
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div><!-- Pipeline Card -->
+
+        
+
+        <!-- Pipedrive Card -->
+        <div class="col-xxl-2 col-md-6">
+
+          <div class="card info-card customers-card">
+            <div class="card-body">
+              <h5 class="card-title">Pipedrive</h5>
+
+              <div class="d-flex align-items-center">
+                <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                  <i class="bi bi-people"></i>
+                </div>
+                <div class="ps-3">
+                  <h6>{{pipedrive}}</h6>
+
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+        </div><!-- End Pipedrive Card -->
+
+        <!-- Sample sent Card -->
+        <div class="col-xxl-2 col-md-6">
+
+          <div class="card info-card customers-card">
+            <div class="card-body">
+              <h5 class="card-title">Sample Sent</h5>
+
+              <div class="d-flex align-items-center">
+                <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                  <i class="bi bi-people"></i>
+                </div>
+                <div class="ps-3">
+                  <h6>{{sample_sent}}</h6>
+
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+        </div><!-- Sample sent Card -->
+
+        <!-- Email Contacts Card -->
+        <div class="col-xxl-2 col-md-6">
+
+          <div class="card info-card customers-card">
+            <div class="card-body">
+              <h5 class="card-title">Email Contacts</h5>
+
+              <div class="d-flex align-items-center">
+                <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                  <i class="bi bi-people"></i>
+                </div>
+                <div class="ps-3">
+                  <h6>{{email_contacts}}</h6>
+
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+        </div><!-- Email Contacts Card  -->
+
+        <!-- Last Updated Card -->
+        <div class="col-xxl-2 col-md-6">
+
+          <div class="card info-card customers-card">
+            <div class="card-body">
+              <h5 class="card-title" style="padding-bottom:0;">Last Updated:</h5>
+
+              <div class="d-flex align-items-center">
+                <div>
+                  <small>{{refresh_flag}}</small>
+
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+        </div><!-- Last Updated Card  -->
+
+      </div>
+    </div><!-- End Left side columns -->
+
+  </div>
+</section>
+{% endblock content %}
+

@@ -1,0 +1,309 @@
+{% extends "layout.html" %}
+{% block content %}
+<section class="section">
+    <div class="row">
+        <!-- Tegral forms -->
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-body">
+                    
+                <h5 class="card-title">{{tegral_title}}</h5>
+
+                <!-- General Form Elements -->
+                <form method="POST" action="" id="tg-add-monthly-target-form">
+                    {{ form.hidden_tag() }}
+                    <div class="row mb-3">
+                        {{ form.jan.label(class="col-sm-3 col-form-label") }}
+                        <div class="col-sm-9">
+                            {{ form.jan(class="form-control") }}
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        {{ form.feb.label(class="col-sm-3 col-form-label") }}
+                        <div class="col-sm-9">
+                            {{ form.feb(class="form-control") }}
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        {{ form.mar.label(class="col-sm-3 col-form-label") }}
+                        <div class="col-sm-9">
+                            {{ form.mar(class="form-control") }}
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        {{ form.apr.label(class="col-sm-3 col-form-label") }}
+                        <div class="col-sm-9">
+                            {{ form.apr(class="form-control") }}
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        {{ form.may.label(class="col-sm-3 col-form-label") }}
+                        <div class="col-sm-9">
+                            {{ form.may(class="form-control") }}
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        {{ form.june.label(class="col-sm-3 col-form-label") }}
+                        <div class="col-sm-9">
+                            {{ form.june(class="form-control") }}
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        {{ form.july.label(class="col-sm-3 col-form-label") }}
+                        <div class="col-sm-9">
+                            {{ form.july(class="form-control") }}
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        {{ form.aug.label(class="col-sm-3 col-form-label") }}
+                        <div class="col-sm-9">
+                            {{ form.aug(class="form-control") }}
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        {{ form.sept.label(class="col-sm-3 col-form-label") }}
+                        <div class="col-sm-9">
+                            {{ form.sept(class="form-control") }}
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        {{ form.october.label(class="col-sm-3 col-form-label") }}
+                        <div class="col-sm-9">
+                            {{ form.october(class="form-control") }}
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        {{ form.nov.label(class="col-sm-3 col-form-label") }}
+                        <div class="col-sm-9">
+                            {{ form.nov(class="form-control") }}
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        {{ form.dec.label(class="col-sm-3 col-form-label") }}
+                        <div class="col-sm-9">
+                            {{ form.dec(class="form-control") }}
+                        </div>
+                    </div>
+                    
+
+                    <div class="row mb-3">
+                    <label class="col-sm-3 col-form-label"></label>
+                    <div class="col-sm-9">
+                        <button class="btn btn-primary"><span class="spinner-border spinner-border-sm generate-spinner" role="status" aria-hidden="true" style="display: none;"></span> Update</button>
+                    </div>
+                    </div>
+
+                    <div id="tg-result"></div>
+
+                </form><!-- End General Form Elements -->
+                <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+                <script>
+                    (function($) {
+                        $('#tg-add-monthly-target-form').submit(function (e) {
+                            var url = "{{ url_for('tg_update_month_target_process') }}"; // send the form data here.
+                            $.ajax({
+                                type: "POST",
+                                url: url,
+                                data: $(this).serialize(), // serializes the form's elements.
+                                cache: false,
+                                beforeSend: function(){
+                                    $('.generate-spinner').show();
+                                },
+                                complete: function(){
+                                    $('.generate-spinner').hide();
+                                },
+                                success: function (data) {
+                                    $('.alert-danger').remove();
+                                    if( data.result == 'SUCCESS') {
+                                        $('#tg-result').prepend('<div class="alert alert-success bg-success text-light border-0 alert-dismissible fade show" role="alert">Successfully Added! Reloading after 2 seconds<button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button></div>');
+                                        setTimeout(function () {
+                                            location.reload();
+                                        }, 1000);
+                                    }
+                                    else {
+                                        $('#tg-result').prepend('<div class="alert alert-danger bg-danger text-light border-0 alert-dismissible fade show" role="alert">Field Errors!<button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button></div>');
+                                    }
+                                }
+                            });
+                            e.preventDefault(); // block the traditional submission of the form.
+                        });
+                
+                        // Inject our CSRF token into our AJAX request.
+                        $.ajaxSetup({
+                            beforeSend: function(xhr, settings) {
+                                if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
+                                    xhr.setRequestHeader("X-CSRFToken", "{{ form.csrf_token._value() }}")
+                                }
+                            }
+                        })
+                    })(jQuery);
+                </script>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Purific forms -->
+        <div class="col-lg-6">
+
+            <div class="card">
+                <div class="card-body">
+                    
+                <h5 class="card-title">{{purific_title}}</h5>
+
+                <!-- General Form Elements -->
+                <form method="POST" action="" id="pr-add-monthly-target-form">
+                    {{ pur_form.hidden_tag() }}
+                    <div class="row mb-3">
+                        {{ pur_form.jan.label(class="col-sm-3 col-form-label") }}
+                        <div class="col-sm-9">
+                            {{ pur_form.jan(class="form-control") }}
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        {{ pur_form.feb.label(class="col-sm-3 col-form-label") }}
+                        <div class="col-sm-9">
+                            {{ pur_form.feb(class="form-control") }}
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        {{ pur_form.mar.label(class="col-sm-3 col-form-label") }}
+                        <div class="col-sm-9">
+                            {{ pur_form.mar(class="form-control") }}
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        {{ pur_form.apr.label(class="col-sm-3 col-form-label") }}
+                        <div class="col-sm-9">
+                            {{ pur_form.apr(class="form-control") }}
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        {{ pur_form.may.label(class="col-sm-3 col-form-label") }}
+                        <div class="col-sm-9">
+                            {{ pur_form.may(class="form-control") }}
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        {{ pur_form.june.label(class="col-sm-3 col-form-label") }}
+                        <div class="col-sm-9">
+                            {{ pur_form.june(class="form-control") }}
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        {{ pur_form.july.label(class="col-sm-3 col-form-label") }}
+                        <div class="col-sm-9">
+                            {{ pur_form.july(class="form-control") }}
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        {{ pur_form.aug.label(class="col-sm-3 col-form-label") }}
+                        <div class="col-sm-9">
+                            {{ pur_form.aug(class="form-control") }}
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        {{ pur_form.sept.label(class="col-sm-3 col-form-label") }}
+                        <div class="col-sm-9">
+                            {{ pur_form.sept(class="form-control") }}
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        {{ pur_form.october.label(class="col-sm-3 col-form-label") }}
+                        <div class="col-sm-9">
+                            {{ pur_form.october(class="form-control") }}
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        {{ pur_form.nov.label(class="col-sm-3 col-form-label") }}
+                        <div class="col-sm-9">
+                            {{ pur_form.nov(class="form-control") }}
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        {{ pur_form.dec.label(class="col-sm-3 col-form-label") }}
+                        <div class="col-sm-9">
+                            {{ pur_form.dec(class="form-control") }}
+                        </div>
+                    </div>
+                    
+
+                    <div class="row mb-3">
+                    <label class="col-sm-3 col-form-label"></label>
+                    <div class="col-sm-9">
+                        <button class="btn btn-primary"><span class="spinner-border spinner-border-sm generate-spinner" role="status" aria-hidden="true" style="display: none;"></span> Update</button>
+                    </div>
+                    </div>
+
+                    <div id="pr-result"></div>
+
+                </form><!-- End General Form Elements -->
+                <script>
+                    (function($) {
+                        $('#pr-add-monthly-target-form').submit(function (e) {
+                            var url = "{{ url_for('pr_update_month_target_process') }}"; // send the form data here.
+                            $.ajax({
+                                type: "POST",
+                                url: url,
+                                data: $(this).serialize(), // serializes the form's elements.
+                                cache: false,
+                                beforeSend: function(){
+                                    $('.generate-spinner').show();
+                                },
+                                complete: function(){
+                                    $('.generate-spinner').hide();
+                                },
+                                success: function (data) {
+                                    $('.alert-danger').remove();
+                                    if( data.result == 'SUCCESS') {
+                                        $('#pr-result').prepend('<div class="alert alert-success bg-success text-light border-0 alert-dismissible fade show" role="alert">Successfully Added! Reloading after 2 seconds<button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button></div>');
+                                        setTimeout(function () {
+                                            location.reload();
+                                        }, 1000);
+                                    }
+                                    else {
+                                        $('#pr-result').prepend('<div class="alert alert-danger bg-danger text-light border-0 alert-dismissible fade show" role="alert">Field Errors!<button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button></div>');
+                                    }
+                                }
+                            });
+                            e.preventDefault(); // block the traditional submission of the form.
+                        });
+                
+                        // Inject our CSRF token into our AJAX request.
+                        $.ajaxSetup({
+                            beforeSend: function(xhr, settings) {
+                                if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
+                                    xhr.setRequestHeader("X-CSRFToken", "{{ form.csrf_token._value() }}")
+                                }
+                            }
+                        })
+                    })(jQuery);
+                </script>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock content %}
+
